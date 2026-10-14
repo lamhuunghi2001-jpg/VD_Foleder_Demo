@@ -96,3 +96,4 @@ Lưu ý: Các ví dụ trên dùng để tìm và lọc lỗi; chưa ghi kết q
 - PowerShell: phù hợp nhất nếu bài tập yêu cầu quản trị hệ thống Windows bằng script và xử lý dữ liệu theo pipeline.
 - Git Bash: phù hợp khi muốn sử dụng lệnh quen thuộc của Linux/Unix và làm việc với Git.
 - CMD: phù hợp với các tác vụ Windows cơ bản và script batch đơn giản.# VD_Foleder_Demo
+# VD_Foleder_Demo

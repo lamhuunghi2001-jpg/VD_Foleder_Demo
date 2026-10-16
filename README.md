@@ -1,99 +1,81 @@
-# BÀI TẬP: LỌC LOG VÀ TẠO BÁO CÁO LỖI BẰNG POWERSHELL
+# **Bài 3: Giảm chi phí vận hành Chatbot Al**
+**HỌ VÀ TÊN:** Lâm Hữu Nghị
 
-## 1. Mục tiêu
+**LỚP:** HCM_CNTT1
 
-- Tìm kiếm các file `.log` trong thư mục hiện tại và toàn bộ thư mục con.
-- Lọc các dòng chứa từ khóa `ERROR`.
-- Trích xuất đường dẫn file, số dòng và nội dung lỗi.
-- Ghi kết quả vào `bao_cao_loi.txt` mà không làm mất dữ liệu đã có.
+**MÔN:** nhapmonCNTT
 
-## 2. Các câu lệnh thực hiện
+**BÀI:** SESSION10
+ 
+ **BÀI TẬP:** EX03 giảm chi phí vận hành Chatbot Al
+ ## **Phần 1. Phân tích bài toán:** 
+# GreenTech - Hệ thống Chuyên gia Nông nghiệp AI
 
-### Bước 1: Tìm tất cả file `.log`
+GreenTech là hệ thống hỗ trợ nông nghiệp thông minh, ứng dụng Mô hình ngôn ngữ lớn (LLM) để tiếp nhận và trả lời các thắc mắc về kỹ thuật canh tác, dịch bệnh và chăm sóc cây trồng của người nông dân theo thời gian thực.
 
-```powershell
-Get-ChildItem -Path . -Filter *.log -File -Recurse
+## Tính năng nổi bật
+
+*   **Tư vấn kỹ thuật 24/7:** Phân tích triệu chứng bệnh cây trồng và đưa ra giải pháp sinh học/hóa học tối ưu.
+*   **Xử lý dữ liệu bằng Markdown:** Tối ưu hóa cấu trúc văn bản trả về giúp AI xử lý nhanh hơn, tiết kiệm chi phí và tăng độ chính xác.
+*   **Thân thiện với người dùng:** Nội dung câu trả lời trực quan, dễ đọc ngay cả trên các thiết bị di động có cấu hình thấp hoặc mạng yếu.
+
+## Tại sao hệ thống chọn Markdown thay vì HTML?
+
+Để đảm bảo hiệu năng và tiết kiệm chi phí vận hành cho hệ thống "GreenTech", chúng tôi áp dụng định dạng Markdown trong lõi xử lý AI dựa trên các tiêu chí:
+
+1.  **Tiết kiệm Token:** Giảm từ 30% - 50% số lượng token so với HTML rườm rà, giúp tối ưu chi phí API.
+2.  **Giảm độ trễ (Latency):** Tốc độ sinh văn bản của AI nhanh hơn, phản hồi cho người nông dân ngay lập tức.
+3.  **Human-readable:** Văn bản dạng Markdown dễ đọc, dễ hiểu trực tiếp mà không bị rối mắt bởi các thẻ kỹ thuật như `<div>`, `<p>`, `<strong>`.
+
+### Bảng so sánh cấu trúc dữ liệu
+
+| Tiêu chí | Định dạng Markdown | Định dạng HTML |
+| :--- | :--- | :--- |
+| **Cú pháp in đậm** | `**Lúa bị đạo ôn**` | `<strong>Lúa bị đạo ôn</strong>` |
+| **Số lượng ký tự** | 18 ký tự | 31 ký tự |
+| **Độ thân thiện (UI)** | Rất cao (Hiển thị dạng thô vẫn sạch sẽ) | Thấp (Bị lộ thẻ nếu lỗi render) |
+
+## Hướng dẫn cài đặt và khởi chạy
+
+### 1. Yêu cầu hệ thống
+*   Python 3.10+
+*   Khóa API của mô hình LLM (OpenAI, Gemini, hoặc Claude)
+
+### 2. Cài đặt các thư viện cần thiết
+Mở terminal và chạy lệnh sau để cài đặt các package phụ thuộc:
+```bash
+pip install -r requirements.txt
 ```
 
-### Bước 2: Lọc lỗi và ghi nối vào báo cáo
-
-```powershell
-Get-ChildItem -Path . -Filter *.log -File -Recurse |
-    Select-String -Pattern 'ERROR' |
-    ForEach-Object {
-        "$($_.Path):$($_.LineNumber): $($_.Line)"
-    } |
-    Add-Content -Path .\bao_cao_loi.txt -Encoding utf8
+### 3. Cấu hình biến môi trường
+Tạo tệp `.env` tại thư mục gốc và cấu hình key của bạn:
+```env
+AI_API_KEY=your_api_key_here
+OUTPUT_FORMAT=MARKDOWN
 ```
 
-## 3. Giải thích câu lệnh
+### 4. Chạy ứng dụng
+Khởi chạy hệ thống chatbot chuyên gia:
+```bash
+python main.py
+```
 
-| Thành phần | Chức năng |
-|---|---|
-| `Get-ChildItem` | Liệt kê các file và thư mục. |
-| `-Path .` | Bắt đầu tìm kiếm từ thư mục hiện tại. |
-| `-Filter *.log` | Chỉ tìm các file có tên kết thúc bằng `.log`. |
-| `-File` | Chỉ lấy file, không lấy thư mục. |
-| `-Recurse` | Tìm kiếm cả trong các thư mục con. |
-| `|` | Chuyển kết quả từ lệnh trước sang lệnh sau. |
-| `Select-String -Pattern 'ERROR'` | Tìm những dòng chứa từ khóa `ERROR`. |
-| `$($_.Path)` | Lấy đường dẫn file chứa dòng lỗi. |
-| `$($_.LineNumber)` | Lấy số thứ tự của dòng lỗi. |
-| `$($_.Line)` | Lấy nội dung của dòng lỗi. |
-| `Add-Content` | Ghi thêm kết quả vào cuối file báo cáo. |
-| `-Encoding utf8` | Chỉ định mã hóa UTF-8 khi ghi dữ liệu. |
+## Kiến trúc luồng dữ liệu (Data Flow)
+[Nông dân đặt câu hỏi]
+-->
+[Hệ thống GreenTech xử lý]
+-->
+[AI sinh câu trả lời (Dạng Markdown sạch)]
+-->
+[Frontend Render: Markdown --> HTML trực quan]
+-->
+[Nông dân nhận kết quả giao diện đẹp, tốc độ cao]
 
-## 4. Phân tích cách bảo vệ dữ liệu cũ
+## Đóng góp dự án
 
-- `Add-Content` ghi nối nội dung mới vào cuối file.
-- `Set-Content` thay thế nội dung hiện có bằng nội dung mới.
-- Vì đề bài yêu cầu giữ nguyên báo cáo của ngày hôm trước nên sử dụng `Add-Content`.
-- Nếu chạy lại cùng một tập log, báo cáo có thể xuất hiện các dòng lỗi trùng lặp.
-- Cần có cơ chế phân biệt log mới hoặc đánh dấu ngày chạy nếu muốn tránh trùng dữ liệu khi tự động hóa.
+Mọi ý tưởng đóng góp hoặc báo lỗi (Issues) xin vui lòng gửi về mục Pull Requests của kho lưu trữ này. GreenTech luôn chào đón sự chung tay từ cộng đồng để hỗ trợ người nông dân tốt hơn.
 
-## 5. Kết luận bài tập
+## Giấy phép
 
-PowerShell giúp tìm kiếm file, lọc nội dung và tự động ghi báo cáo bằng cách kết hợp nhiều lệnh qua pipeline. Việc lựa chọn `Add-Content` đáp ứng yêu cầu ghi nối dữ liệu và bảo vệ nội dung báo cáo cũ.
-## 6. Bảng Phân tích và so sánh PowerShell, Git Bash và CMD
-
-| Tiêu chí | PowerShell | Git Bash | CMD |
-|---|---|---|---|
-| **Môi trường** | Shell và ngôn ngữ kịch bản, tích hợp tốt với Windows; cũng có phiên bản chạy trên macOS và Linux. | Môi trường Bash được cung cấp cùng Git for Windows. | Trình thông dịch dòng lệnh truyền thống của Windows. |
-| **Cách xử lý dữ liệu** | Pipeline truyền các đối tượng có thuộc tính và dữ liệu có cấu trúc. | Pipeline chủ yếu truyền dữ liệu dạng văn bản. | Chủ yếu xử lý văn bản và kết quả đầu ra của lệnh. |
-| **Tìm file `.log`** | `Get-ChildItem -Recurse -Filter *.log -File` | `find . -type f -name "*.log"` | `dir /s /b *.log` |
-| **Lọc dòng lỗi** | `Select-String -Pattern 'ERROR'` | `grep 'ERROR'` | `findstr /s /n /i "ERROR" *.log` |
-| **Ghi nối báo cáo** | `Add-Content` | `>>` | `>>` |
-| **Ghi đè báo cáo** | `Set-Content` | `>` | `>` |
-| **Tự động hóa** | File script `.ps1` | File script `.sh` | File batch `.bat` hoặc `.cmd` |
-| **Biến môi trường** | `$env:PATH` | `$PATH` | `%PATH%` |
-| **Hệ điều hành** | Windows, macOS và Linux (PowerShell hiện đại). | Chủ yếu được sử dụng trên Windows thông qua Git for Windows; Bash cũng phổ biến trên Linux và macOS. | Chủ yếu dành cho Windows. |
-| **Điểm mạnh** | Quản trị Windows, xử lý dữ liệu có cấu trúc và tự động hóa tác vụ phức tạp. | Sử dụng các lệnh kiểu Unix/Linux, thao tác Git và làm việc với dự án phần mềm. | Đơn giản, nhẹ, phù hợp với các lệnh Windows truyền thống và file batch. |
-| **Hạn chế** | Cú pháp ban đầu có thể khó nhớ với người mới học. | Một số lệnh và đường dẫn khác với Windows; có thể cần chú ý khi kết hợp công cụ Windows. | Khả năng xử lý dữ liệu và tự động hóa phức tạp hạn chế hơn PowerShell. |
-## 7. Ví dụ phân biệt 3 công cụ
-1. PowerShell
-Tìm file và lọc nội dung bằng các lệnh PowerShell.
-Get-ChildItem -Recurse -Filter *.log -File |
-    Select-String -Pattern 'ERROR'
-
-
-
-2. Git Bash
-Kết hợp lệnh tìm file của Unix với grep.
-find . -type f -name "*.log" -exec grep -nH 'ERROR' {} +
-
-
-
-3. CMD
-Sử dụng lệnh Windows truyền thống để tìm file và lọc văn bản.
-for /r %f in (*.log) do @findstr /n /i "ERROR" "%f"
-
-
-Nếu viết lệnh trong file .bat hoặc .cmd, phải đổi %f thành %%f.
-
-
-Lưu ý: Các ví dụ trên dùng để tìm và lọc lỗi; chưa ghi kết quả vào báo cáo. Khi thực hiện đầy đủ bài tập, anh cần bổ sung phần ghi nối vào bao_cao_loi.txt và kiểm tra để tránh ghi trùng nếu chạy lại cùng bộ log.
-## 8. Kết luận so sánh
-- PowerShell: phù hợp nhất nếu bài tập yêu cầu quản trị hệ thống Windows bằng script và xử lý dữ liệu theo pipeline.
-- Git Bash: phù hợp khi muốn sử dụng lệnh quen thuộc của Linux/Unix và làm việc với Git.
-- CMD: phù hợp với các tác vụ Windows cơ bản và script batch đơn giản.# VD_Foleder_Demo
-# VD_Foleder_Demo
+Dự án này được phát hành dưới bản quyền **MIT License**.
+# HCM_CNTT_nhapmonCNTT_-LAMHUUNGHI-_SESSION10_EX03
